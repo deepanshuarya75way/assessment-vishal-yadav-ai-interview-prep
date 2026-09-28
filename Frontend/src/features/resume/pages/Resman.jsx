@@ -31,7 +31,7 @@ export default function ResumeManager(){
     } else{
       await api.post("/api/resumes",{title:title || "Untitled resume",content,isActive});
     }
-    reserForm();
+    resetform();
     fetchResumes();
    };
 
