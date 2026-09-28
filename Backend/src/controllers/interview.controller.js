@@ -10,7 +10,7 @@ const interviewReportModel = require("../models/InterviewReport.model")
  */
 async function generateInterViewReportController(req, res, next) {
   try {
-    const { selfDescription, jobDescription } = req.body
+    const { selfDescription, jobDescription ,resumeId} = req.body
 
     // Validate required fields up front, before doing any expensive work
     // (PDF parsing, AI calls). This prevents crashes like
@@ -22,17 +22,20 @@ async function generateInterViewReportController(req, res, next) {
         message: "jobDescription is required."
       })
     }
-
-    if (!req.file && (!selfDescription || !selfDescription.trim())) {
-      return res.status(400).json({
-        message: "Either a resume file or a selfDescription is required."
-      })
-    }
-
+    
     let resumeText = ""
     if (req.file) {
       const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
       resumeText = resumeContent.text
+    } else if(resumeId){
+       const savedResume=await require("../models/resume.model").findOne({_id:resumeId,user:req.user.id})
+       if(savedResume) resumeText=savedResume.content;
+    }
+    
+    if (!req.file && (!selfDescription || !selfDescription.trim())) {
+      return res.status(400).json({
+        message: "Either a resume file or a selfDescription is required."
+      })
     }
 
     const interViewReportByAi = await generateInterviewReport({

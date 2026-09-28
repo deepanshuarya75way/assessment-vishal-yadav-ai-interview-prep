@@ -14,7 +14,7 @@ const authRouter=require("./routes/auth.routes");
 const interviewRouter=require("./routes/interview.routes")
 app.use("/api/auth",authRouter);
 app.use("/api/interview",interviewRouter)
-
+app.use("/api/resumes",require("./routes/resume.routes"));
 // Centralized error handler — must be defined LAST, after all routes.
 // Any error passed via next(error) (or thrown in an async route handler,
 // which Express 5 forwards automatically) ends up here instead of

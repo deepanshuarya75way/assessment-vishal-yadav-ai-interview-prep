@@ -4,7 +4,7 @@ import Register from "./features/auth/pages/Register";
 import Protected from "./features/auth/components/Protected";
 import Home from "./features/interview/pages/Home";
 import Interview from "./features/interview/pages/interview";
-
+import ResumeManager from "./features/resume/pages/Resman.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -22,5 +22,8 @@ export const router = createBrowserRouter([
     {
         path:"/interview/:interviewId",
         element: <Protected><Interview /></Protected>
+    },{
+        path:"/resumes",
+        element:<Protected><ResumeManager></ResumeManager></Protected>
     }
 ])

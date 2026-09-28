@@ -1,9 +1,8 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useNavigate } from 'react-router'
-
 const Home = () => {
 
     const { loading, generateReport, reports } = useInterview()
@@ -12,6 +11,18 @@ const Home = () => {
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [resumeFile, setResumeFile] = useState(null)
+    const [resume,setresume]=useState([]);
+    const [selectResumeId,setSelectResumeId]=useState("");
+
+    useEffect(()=>{
+         fetch("/api/resumes",{ credentails:"include"})
+         .then(res=>res.json())
+         .then(data=>{
+            setresume(data.resumes||[]);
+            const active=(data.resumes||[]).find(r=>r.isActive);
+            if(active) setSelectResumeId(active_id);
+         }).catch(()=>{});
+    })
 
     const resumeInputRef = useRef()
 
@@ -32,7 +43,8 @@ const Home = () => {
             const data = await generateReport({
                 jobDescription,
                 selfDescription,
-                resumeFile
+                resumeFile,
+                resumeId:selectResumeId || undefined
             })
 
             navigate(`/interview/${data._id}`)
@@ -80,7 +92,25 @@ const Home = () => {
     </div>
             </header>
 
-
+         <div style={{marginBottom:"1rem"}}>
+            <label style={{display:"block",marginBottom:"0.4rem"}}>Select Resume Version:</label>
+            <select 
+            value={selectResumeId}
+            oncChange={(e)=>setSelectResumeId(e.target.value)}
+            style={{width:"100%",padding:"0.5rem",background:"#1e2535",color:"#fff",border:"1px solid #2a3348",borderRadius:"6px"}}
+            >
+                <option value="">Choose a Version</option>
+                {resume.map(r=>(
+                        <option key={r._id} value={r._id}>
+                            {r.title}{r.isActive? "(Active)":""}
+                        </option>
+                    )
+                )}
+            </select>
+            <button type="button" onClick={()=>navigate("/resumes")} style={{marginTop:"0.4rem",background:"none",border:"none",color:"#40a5fa",cursor:"pointer"}}>
+                Manage or Create Resumes
+            </button>
+         </div>
             {/* Main Card */}
             <div className='interview-card'>
 

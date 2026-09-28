@@ -17,10 +17,10 @@ export const useInterview = () => {
 
     const [downloadingResume, setDownloadingResume] = useState(false)
 
-    const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
+    const generateReport = async ({ jobDescription, selfDescription, resumeFile ,resumeId}) => {
         setLoading(true)
         try {
-            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
+            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile ,resumeId})
             setReport(response.interviewReport)
             return response.interviewReport
         } catch (error) {

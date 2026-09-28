@@ -12,9 +12,10 @@ const api = axios.create({
 export const generateInterviewReport = async ({ jobDescription, selfDescription, resumeFile }) => {
 
     const formData = new FormData()
-    formData.append("jobDescription", jobDescription)
-    formData.append("selfDescription", selfDescription)
-    formData.append("resume", resumeFile)
+    if(jobDescription) formData.append("jobDescription", jobDescription)
+    if(selfDescription) formData.append("selfDescription", selfDescription)
+    if(resumeFile) formData.append("resume", resumeFile)
+    if(resumeId) formData.append("resumeId",resumeId)
 
     // NOTE: Do NOT manually set "Content-Type": "multipart/form-data" here.
     // Axios/the browser needs to auto-generate the boundary string for
