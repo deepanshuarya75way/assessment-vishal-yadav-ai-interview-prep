@@ -1,15 +1,15 @@
 const {Router}=require("express")
-const {authuser}=require("../middlwares/auth.middleware");
+const {authUser}=require("../middlewares/auth.middleware");
 const Resume=require("../models/resume.model");
 const router=Router();
 
-router.use(authuser);
+router.use(authUser);
 
 router.post("/",async (req,res,next)=>{
     try{
       const count=await Resume.countDocuments({user:req.user.id});
-      const isActive=req.body.isActive || count===0;
-      if(isActive) await Resume.upddateMany({user:req.user.id},{isActive:false});
+      const isActive=req.body.IsActive || count===0;
+      if(isActive) await Resume.updateMany({user:req.user.id},{isActive:false});
       const resume=await Resume.create({...req.body,user:req.user.id,isActive});
       res.status(201).json({resume});
     }
@@ -20,16 +20,16 @@ router.post("/",async (req,res,next)=>{
 
 router.get("/",async(req,res,next)=>{
   try{
-    const resumes=await Resume.find({user:req.user.id}).sort({isActive:-1,updatedAt:-1});
-    req.json({resumes});
+    const resumes=await Resume.find({user:req.user.id}).sort({IsActive:-1,updatedAt:-1});
+    res.json({resumes});
   } catch(err) {
-    next(err)
+    next(err);
   }
 });
 
 router.put("/:id",async (req,res,next)=>{
   try{
-    if(req.body.isActive) await Resume.updateMany({user:req.user.id},{isActive:false})
+    if(req.body.IsActive) await Resume.updateMany({user:req.user.id},{IsActive:false})
     const resume=await Resume.findOneAndUpdate(
       {
        _id:req.params.id, user:req.user.id 
@@ -55,10 +55,10 @@ router.patch("/:id/rename",async(req,res,next)=>{
 
 router.patch("/:id/active",async(req,res,next)=>{
   try{
-    await Resume.updateMany({user:req.user.id},{isActive:false});
+    await Resume.updateMany({user:req.user.id},{IsActive:false});
     const resume=await Resume.findOneAndUpdate(
       {_id:req.params.id,user:req.user.id},
-      {isActive:true},
+      {IsActive:true},
       {new:true}
     )
     res.json({resume});
@@ -68,9 +68,9 @@ router.patch("/:id/active",async(req,res,next)=>{
 router.delete("/:id",async (req,res,next)=>{
   try{
     const resume=await Resume.findOneAndDelete({_id:req.params.id,user:req.user.id});
-    if(resume?.isActive){
+    if(resume?.IsActive){
       const nextActive=await resume.findOne({user:req.user.id}).sort({updatedAt:-1});
-      if(nextActive) await Resume.findByIdAndUpdate(nextActive._id,{isActive:true});
+      if(nextActive) await Resume.findByIdAndUpdate(nextActive._id,{IsActive:true});
     }
     res.json({message:"Deleted Successfully"});
   } catch(err) {next(err);}

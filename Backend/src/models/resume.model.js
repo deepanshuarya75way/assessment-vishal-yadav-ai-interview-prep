@@ -7,7 +7,7 @@ const resumeSchema=new mongoose.Schema({
     required:true
   },
   title:{
-    tyep:String,
+    type:String,
     required:true,
     default:"Untitled resume",
   },
